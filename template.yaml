@@ -1,0 +1,138 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for ID Minting Service
+
+Globals:
+  Function:
+    Timeout: 30
+
+Parameters:
+    NSTableName:
+      Type: String
+      Default: "mint"
+    NOIDNAA:
+      Type: String
+      Default: "53696"
+    NOIDScheme:
+      Type: String
+      Default: "ark:/"
+    NOIDTemplate:
+      Type: String
+      Default: "eeddeede"
+    Region:
+      Type: String
+      Default: "us-east-1"
+
+Resources:
+  ResolutionTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Ref NSTableName
+      AttributeDefinitions:
+        - AttributeName: long_url
+          AttributeType: S
+        - AttributeName: short_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: short_id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: long_url-index
+          KeySchema:
+            - AttributeName: long_url
+              KeyType: HASH
+          Projection:
+            ProjectionType: "ALL"
+
+  MintApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          Description: Usage plan for this API
+          Quota:
+            Limit: 500
+            Period: MONTH
+          Throttle:
+            BurstLimit: 100
+            RateLimit: 50
+        ApiKeyRequired: true
+
+  NoidFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apps/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Layers:
+        - !Ref SharedUtils
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NSTableName
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MintApi
+            Path: /mint
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+      Environment:
+        Variables:
+          NOID_NAA: !Ref NOIDNAA
+          NOID_Scheme: !Ref NOIDScheme
+          NOID_Template: !Ref NOIDTemplate
+          NSTable: !Ref NSTableName
+          Region: !Ref Region
+
+  UpdateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apps/
+      Handler: update.lambda_handler
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NSTableName
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MintApi
+            Path: /update
+            Method: post
+            Auth:
+              ApiKeyRequired: true
+      Environment:
+        Variables:
+          NSTable: !Ref NSTableName
+          Region: !Ref Region
+
+  SharedUtils:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Sharedutils functions
+      ContentUri: 'sharedutils/'
+      CompatibleRuntimes:
+        - python3.8
+    Metadata:
+      BuildMethod: python3.8
+
+Outputs:
+  GetMintURL:
+    Description: "API Gateway endpoint URL for Prod stage for Noid function"
+    Value: !Sub "https://${MintApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mint"
+  PostMintURL:
+    Description: "API Gateway endpoint URL for Prod stage for Noid function"
+    Value: !Sub "https://${MintApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update"
+  NoidFunction:
+    Description: "Noid Lambda Function ARN"
+    Value: !GetAtt NoidFunction.Arn
+  NoidFunctionIamRole:
+    Description: "Implicit IAM Role created for Noid function"
+    Value: !GetAtt NoidFunctionRole.Arn

@@ -1,0 +1,59 @@
+{
+    "Table": {
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "long_url",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "short_id",
+                "AttributeType": "S"
+            }
+        ],
+        "TableName": "mint",
+        "KeySchema": [
+            {
+                "AttributeName": "short_id",
+                "KeyType": "HASH"
+            }
+        ],
+        "TableStatus": "ACTIVE",
+        "CreationDateTime": "2020-08-05T10:06:49.048000-04:00",
+        "ProvisionedThroughput": {
+            "NumberOfDecreasesToday": 0,
+            "ReadCapacityUnits": 0,
+            "WriteCapacityUnits": 0
+        },
+        "TableSizeBytes": 169,
+        "ItemCount": 2,
+        "TableArn": "arn:aws:dynamodb:us-east-1:xxxx:table/mint",
+        "TableId": "xxxx",
+        "BillingModeSummary": {
+            "BillingMode": "PAY_PER_REQUEST",
+            "LastUpdateToPayPerRequestDateTime": "2020-08-05T10:06:49.048000-04:00"
+        },
+        "GlobalSecondaryIndexes": [
+            {
+                "IndexName": "long_url-index",
+                "KeySchema": [
+                    {
+                        "AttributeName": "long_url",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "ALL"
+                },
+                "IndexStatus": "ACTIVE",
+                "ProvisionedThroughput": {
+                    "NumberOfDecreasesToday": 0,
+                    "ReadCapacityUnits": 0,
+                    "WriteCapacityUnits": 0
+                },
+                "IndexSizeBytes": 169,
+                "ItemCount": 2,
+                "IndexArn": "arn:aws:dynamodb:us-east-1:xxxx:table/mint/index/long_url-index"
+            }
+        ]
+    }
+}
