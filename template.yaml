@@ -59,10 +59,10 @@ Resources:
           CreateUsagePlan: PER_API
           Description: Usage plan for this API
           Quota:
-            Limit: 500
+            Limit: 10000
             Period: MONTH
           Throttle:
-            BurstLimit: 100
+            BurstLimit: 1000
             RateLimit: 50
         ApiKeyRequired: true
 
