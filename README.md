@@ -29,7 +29,7 @@ The application uses several AWS resources, including Lambda functions, a Dynamo
 
 ### Deploy VTDLP ID Minting Service application using CloudFormation stack
 #### Step 1: Launch CloudFormation stack
-[![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?&templateURL=https://vtdlp-dev-cf.s3.amazonaws.com/8f524e63bccbf446b1847e02adda92fa.template)
+[![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?&templateURL=https://vtdlp-dev-cf.s3.amazonaws.com/95e059ceb522e30eacd80def68b64f43.template)
 
 Click *Next* to continue
 

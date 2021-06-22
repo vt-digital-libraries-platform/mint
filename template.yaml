@@ -49,6 +49,7 @@ Resources:
   MintApi:
     Type: AWS::Serverless::Api
     Properties:
+      Name: !Join [ "-", [ "Mint Service API", !Ref NSTableName] ]
       StageName: Prod
       Cors:
         AllowMethods: "'GET,POST'"
