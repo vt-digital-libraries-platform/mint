@@ -97,6 +97,16 @@ curl -H "x-api-key: APIKEY" -X POST -d "long_url=YourURL&short_url=YourURL&noid=
 {"message": "Rec 3q13c28n is updated."}
 ```
 
+## Tests
+
+Tests are defined in the `tests` folder in this project. Use PIP to install the test dependencies and run tests. You must have a env file: [custom_pytest.ini](custom_pytest.ini)
+
+```bash
+lambdatest$ pip install -r tests/requirements.txt --user
+# unit test
+lambdatest$ python -m pytest tests/unit -v -c custom_pytest.ini
+```
+
 ## Cleanup
 
 To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:

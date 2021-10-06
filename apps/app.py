@@ -10,10 +10,11 @@ noid_naa = os.getenv('NOID_NAA')
 region_name = os.getenv('Region')
 table_name = os.getenv('NSTable')
 
+
 ddb = boto3.resource('dynamodb', region_name=region_name).Table(table_name)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context, ddb):
 
     noid = mint(
         template=noid_template,
@@ -31,6 +32,7 @@ def lambda_handler(event, context):
 
         record = {}
         record["short_id"] = short_id
+
         ddb.put_item(Item=record)
 
     except BaseException:
