@@ -9,7 +9,7 @@ table_name = os.getenv('NSTable')
 ddb = boto3.resource('dynamodb', region_name=region_name).Table(table_name)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context, ddb):
 
     headers = {
         "Content-Type": "application/json",
@@ -29,15 +29,28 @@ def lambda_handler(event, context):
             create_date_str, '%Y-%m-%dT%H:%M:%S')
         insert_date_str = create_date.strftime("%Y-%m-%dT%H:%M:%S")
 
-        record = {}
-        record["created_at"] = insert_date_str
-        record["long_url"] = long_url
-        record["short_id"] = noid
-        record["short_url"] = short_url
-        record["hits"] = 0
-        record["ttl"] = 4129578000
+        item = ddb.get_item(Key={'short_id': noid})
 
-        ddb.put_item(Item=record)
+        if item.get('Item'):
+
+            record = {}
+            record["created_at"] = insert_date_str
+            record["long_url"] = long_url
+            record["short_id"] = noid
+            record["short_url"] = short_url
+            record["hits"] = 0
+            record["ttl"] = 4129578000
+
+            ddb.put_item(Item=record)
+
+        else:
+            return {
+                "statusCode": 200,
+                "headers": headers,
+                "body": json.dumps({
+                    "message": "Rec {0} is not exist.".format(noid),
+                }),
+            }
 
     except BaseException:
         return {
